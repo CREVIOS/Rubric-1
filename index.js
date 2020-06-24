@@ -1,76 +1,147 @@
-
-var express=require("express"); 
-var bodyParser=require("body-parser"); 
-const Datastore = require('nedb');
+const express=require("express"); 
+const bodyParser=require("body-parser"); 
 const app = express();
-var path = require('path');
+const path = require('path');
+var cookieSession = require('cookie-session')
+require('dotenv').config();
 
-app.listen(3000,() => console.log('listening at 3000'));
-app.use(express.static(path.join(__dirname, 'public')));
+var firebase = require("firebase/app");
+require("firebase/firestore");
 
+var firebaseConfig = {
+	apiKey: process.env.FIREBASE_API_KEY,
+	authDomain: process.env.FIREBASE_AUTH_DOMAIN,
+	databaseURL: process.env.FIREBASE_DB_DOMAIN,
+	projectId: "ams-v4",
+	storageBucket: process.env.FIREBASE_,
+	messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
+	appId: process.env.FIREASE_APP_ID,
+	measurementId: process.env.MEASURE_ID
+};
 
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+let db = firebase.firestore();
+
+app.engine('view engine', require('ejs').renderFile);
+app.use(express.static('public'));
 app.use(bodyParser.json()); 
 app.use(bodyParser.urlencoded({ 
     extended: true
-})); 
-  
-const database = new Datastore('database.db');
-database.loadDatabase();
+}));
 
+app.use(cookieSession({
+  name: 'session',
+  keys: ['key1', 'key2'],
+  maxAge: 24 * 60 * 60 * 1000
+}))
 
-app.post('/sign_up', function(req,res){ 
- console.log('I got a req');
-    var name = req.body.name; 
-    var email =req.body.email; 
-    var score01 = req.body.score01;
-    var cmnt01 =req.body.cmnt01; 
-	 var score02 = req.body.score02;
-    var cmnt02 =req.body.cmnt02;
-	 var score03 = req.body.score03;
-    var cmnt03 =req.body.cmnt03;
-	 var score04 = req.body.score04;
-    var cmnt04 =req.body.cmnt04;
-	var score05 = req.body.score05;
-    var cmnt05 =req.body.cmnt05;
-	var score06 = req.body.score06;
-    var cmnt06 =req.body.cmnt06;
-    var score07 = req.body.score07;
-    var cmnt07 =req.body.cmnt07;
-	var score08 = req.body.score08;
-    var cmnt08 =req.body.cmnt08;
-	var score09 = req.body.score09;
-    var cmnt09 =req.body.cmnt09;
-	var score10 = req.body.score10;
-    var cmnt10 =req.body.cmnt10;
-  
-    var data = { 
-        "name": name, 
-        "email":email, 
-        "score01": score01,
-		"commnet01": cmnt01,
-		"score02": score02,
-		"commnet02": cmnt02,
-		"score03": score03,
-		"commnet03": cmnt03,
-		"score04": score04,
-		"commnet04": cmnt04,
-		"score05": score05,
-		"commnet05": cmnt05,
-		"score06": score06,
-		"commnet06": cmnt06,
-		"score07": score07,
-		"commnet07": cmnt07,
-		"score08": score08,
-		"commnet08": cmnt08,
-		"score09": score09,
-		"commnet09": cmnt09,
-		"Final Score": score10,
-		"Final Comment": cmnt10
-    } 
-database.insert(data);	
- return res.redirect('test.html');
+function isAuthenticated(req) {
+	if (req.session.authenticatedUser && req.session.authenticatedUserLevel && req.session.authenticatedUserRole) {
+		return true;
+	} else {
+		req.session.authenticatedUser = undefined;
+		req.session.authenticatedUserRole = undefined;
+		req.session.authenticatedUserLevel = undefined;
+		return false;
+	}
+};
 
- 
+function getArticle(req, res, article_id, asUser, completion) {
+	if (typeof article_id === "undefined") {
+		return res.render(path.join(__dirname+'/views/result.ejs'), {	resultMessage: "Undefined<br>article<br>id!",
+																		gifURL : "https://media.giphy.com/media/26BROrSHlmyzzHf3i/giphy.gif"});
+	}
+
+	// Get article data with firebase
+	db.collection("articles").doc(article_id).get().then(doc => {
+    	if (!doc.exists) {
+    		console.log('Error getting document');
+			return res.render(path.join(__dirname+'/views/result.ejs'), {	resultMessage: "Cannot<br>find the<br>article!",
+																			gifURL : "https://media.giphy.com/media/26BROrSHlmyzzHf3i/giphy.gif"});
+    	} else {
+    		let tempData = doc.data();
+    		let found = false;
+    		for (var i = tempData.editors.length - 1; i >= 0; i--) {
+    			if (tempData.editors[i].email == asUser || req.session.authenticatedUserLevel > 1) {
+    				found = true;
+					completion(req, res, tempData, asUser);
+					return;
+    			}
+    		}
+    		if (!found) {
+				return res.render(path.join(__dirname+'/views/result.ejs'), {	resultMessage: "Doesn't seem<br>like you are<br>the editor :(",
+																				gifURL : "https://media.giphy.com/media/26BROrSHlmyzzHf3i/giphy.gif"});
+    		}
+    	}
+  	})
+  	.catch(err => {
+    	console.log('Error getting document', err);
+		return res.render(path.join(__dirname+'/views/result.ejs'), {	resultMessage: "Error<br>during<br>query!",
+																		gifURL : "https://media.giphy.com/media/26BROrSHlmyzzHf3i/giphy.gif"});
+  	});
+}
+
+app.get("/get_rubric", function(req, res) {
+	if (!isAuthenticated(req)) {
+		return res.render(path.join(__dirname+'/views/result.ejs'), {	resultMessage: "You are<br>NOT<br>authenticated!<br>Please login in the JMS",
+																		gifURL : "https://media.giphy.com/media/26BROrSHlmyzzHf3i/giphy.gif"});
+	}
+	let asUser = req.session.authenticatedUser;
+	if (req.session.authenticatedUserLevel > 1) {
+		if (typeof req.query.asUser !== "undefined") {
+			asUser = req.query.asUser;
+		}
+	}
+	getArticle(req, res, req.query.id, asUser, function(req, res, tempData, asUser) {
+		let rubrics = tempData.rubrics;
+		if (typeof rubrics === "undefined") { rubrics = {};	}
+		let owners = Object.keys(rubrics);
+		let rubric = rubrics[asUser];
+		if (typeof rubric === "undefined") { rubric = [{}];	}
+		let readOnly = false;
+		if (asUser != req.session.authenticatedUser) {
+			readOnly = true;
+		}
+		return res.render(path.join(__dirname+'/views/index.ejs'), {id: req.query.id, readOnly: readOnly, owners: owners, title: tempData.title, rubric: rubric[rubric.length - 1], article_id: req.query.id, editor: req.session.authenticatedUser, asUser: asUser});
+	})
+});
+
+app.post('/save_form', function(req,res){
+	if (!isAuthenticated(req)) {
+		return res.render(path.join(__dirname+'/views/result.ejs'), {	resultMessage: "You are<br>NOT<br>authenticated!<br>Please login to the JMS",
+																		gifURL : "https://media.giphy.com/media/26BROrSHlmyzzHf3i/giphy.gif"});
+	}
+	getArticle(req, res, req.query.id, req.session.authenticatedUser, function(req, res, oldData) {
+		if (typeof oldData.rubrics === "undefined") { oldData.rubrics = {}; }
+		if (typeof oldData.rubrics[req.session.authenticatedUser] === "undefined") { oldData.rubrics[req.session.authenticatedUser] = []; }
+		if (oldData.rubrics[req.session.authenticatedUser].length > 10) {
+			oldData.rubrics[req.session.authenticatedUser].shift();
+		}
+		oldData.rubrics[req.session.authenticatedUser].push(req.body);
+        let article = db.collection("articles").doc(req.query.id);
+		article.update(oldData);
+		return res.render(path.join(__dirname+'/views/result.ejs'), {	resultMessage: "Thank<br>you for<br>your work<br> <3",
+																		gifURL : "https://media.giphy.com/media/RtXueZ1RxcBna/giphy.gif"});
+	})
 })
-	
+
+app.post('/autosave_form', function(req, res) {
+	if (!isAuthenticated(req)) {
+		return res.sendStatus(403);
+	}
+	getArticle(req, res, req.query.id, function(req, res, oldData) {
+		if (typeof oldData.rubrics === "undefined") { oldData.rubrics = {}; }
+		if (typeof oldData.rubrics[req.session.authenticatedUser] === "undefined") { oldData.rubrics[req.session.authenticatedUser] = []; }
+		if (oldData.rubrics[req.session.authenticatedUser].length > 10) {
+			oldData.rubrics[req.session.authenticatedUser].shift();
+		}
+		oldData.rubrics[req.session.authenticatedUser].push(req.body);
+        let article = db.collection("articles").doc(req.query.id);
+		article.update(oldData);
+		return res.sendStatus(200);
+	})
+})
+
+app.listen(3000,() => console.log('listening at 3000'));
     

@@ -1,0 +1,584 @@
+<!DOCTYPE html> 
+<html> 
+<head> 
+    <title>Editor Grid for <%=title%></title> 
+          
+<link rel="stylesheet" 
+href= "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">          
+<link rel="stylesheet" type="text/css" href="style.css"> 
+<script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
+</head> 
+<body> 
+      
+    <br> 
+    <br> 
+    <br> 
+    <div class="container" > 
+      <label>Rubric of editor:</label>
+      <select class="form-control form-control-sm custom-select custom-select-sm" style="width: 200px;margin: 0 0 20px 0 ;" id="deptChoice" onchange="location = this.value;">
+        <% for (let i = 0; i < owners.length; i++) {%>
+          <% if (asUser == owners[i]) {%>
+              <option value="get_rubric?id=<%=id%>&asUser=<%= owners[i] %>" selected=""><%= owners[i] %></option>
+          <%} else {%>
+              <option value="get_rubric?id=<%=id%>&asUser=<%= owners[i] %>"><%= owners[i] %></option>
+          <%}%>
+        <%}%>
+      </select>
+      <% if (!readOnly) {%>
+      <form id="regForm" action="/save_form?id=<%=article_id%>" method="post"> 
+      <%} else { %>
+      <form id="regForm">
+      <%}%>
+        <input type="text" name="user" hidden value="<%=editor%>">
+        <h1> Editor Grid for <br> <strong><%=title%></strong></h1> 
+        <h5>Rubric by <%=asUser%></h5>
+        <div class="tab">  
+          <h2>Rule #1: There must be no plagiarism. Ever. No exceptions.</h2>
+
+          <br>
+          <h2>1.Communication<h2>
+          <h3>1.1 ABSTRACT</h3>
+          It should clearly and concisely summarise the article, communicating the problem/objective, method and conclusions. It should grab the attention of a potential reader and should not ramble or include any abbreviations/ undefined technical terms or references.
+          <div style="overflow-x:auto;">
+            <table style="width:auto" align="center">
+              <tr>
+                <th><img src="1.jpg"> </th>
+                <th><img src="2.png"></th>
+                <th> <img src="3.png"></th>
+            	<th><img src="4.png"></th>
+              </tr>
+              <tr>
+                <td>
+            	<ul style="list-style-type:disc;">
+            	<li>Very long/rambling</li>
+            <li>Very technical</li>
+            <li>Very poor flow</li>
+            <li>No statement of <br>objective/problem</li>
+            <li>No mention of method</li>
+            <li>No mention of <br>conclusions/results</li>
+            <li>No summary of project</li>
+            </ul>
+            	</td>
+                <td>
+            		<ul style="list-style-type:disc;">
+            	<li>Long/rambling</li>
+            <li>Overly technical</li>
+            <li>Poor/forced flow</li>
+            <li>Some statement of <br>objective/problem</li>
+            <li>Some mention of method</li>
+            <li>Some mention of <br>conclusions/results
+            </li>
+            <li>Poor/inconcise summary <br>of project</li>
+            </ul>
+            	</td>
+                <td>
+            		<ul style="list-style-type:disc;">
+            	<li>Good length and flow</li>
+            <li>Quite accessible<br> to readership</li>
+            <li>Good statement <br>of objective/problem</li>
+            <li>Good statement <br>of conclusions/results</li>
+            <li>Some mention of method</li>
+            <li>Good, concise <br>summary of project</li>
+            </ul>
+            	</td>
+            	<td>
+            		<ul style="list-style-type:disc;">
+            	<li>Great flow, no <br>longer than necessary</li>
+            <li>Very good balance <br>between clarity and detail</li>
+            <li>Excellent statement <br>of objective/problem</li>
+            <li>Conveys why it <br>is interesting</li>
+            <li>Excellent <br>communication of <br>conclusions/results</li>
+
+            </ul>
+            	
+            	</td>
+            </table>
+            </div>
+        <br>
+        <input class="box" type="number" name="score01" id="number" placeholder="Score " value="<%=rubric.score01%>" onchange="computeFinal()"/><br> <br>
+                              
+        <input class="box" type="text" name="cmnt01" id="comment" placeholder="Comment" value="<%=rubric.cmnt01%>"/><br>
+        </div>
+
+
+
+			   <div class="tab">  				   
+						
+
+ 
+ <h2>1.2 READABILITY & STYLE</h2>
+It should be readable by the target group i.e. ages 12 – 20. The concepts must be explained well and in a reader-engaging manner. 
+ Excessive jargon and terminology should be avoided and clearly explained if used. 
+ It should be concise, unambiguous and should exclude unnecessary words. 
+ The author must be coherent and avoid waffling. 
+ Numerical results should be represented using tables, graphs, charts etc. if appropriate. 
+<br>
+ Standard technical writing style also includes:
+  <ul style="list-style-type:disc;">
+<li>Avoiding personal language (e.g. I, we)</li>
+<li>Avoiding emotive and colloquial language (e.g. brilliant, useless, cool) </li>
+<li>Using technical and formal terms (e.g. exceeds specification, <br>statistically insignificant, adequate for the intended use)</li>
+<li>Not using contractions (e.g. don’t, won’t, can’t etc.)</li>
+<li>Defining all abbreviations and technical terms, erring on the side of caution</li>
+<li>Defining all symbols and including the relevant units where appropriate</li>
+<li>Using appropriate sections and headings</li></ul><br>
+<div style="overflow-x:auto;">
+<table style="width:auto" align="center">
+  <tr>
+    <td style="width:auto">
+	<ul style="list-style-type:disc;">
+	<li>The article is not <br>readable by teens</li>
+	<li>Excessive use of jargon</li>
+<li>Lack of coherence</li>
+<li>The sections and headings <br>are not organised well</li>
+<li>No use of tables/<br>graphs if appropriate</li>
+</ul></td>
+    <td style="width:auto">
+		<ul style="list-style-type:disc;">
+<li>The article is readable but hard to follow by early teens</li>
+<li>Somewhat coherent</li>
+<li>The sections are <br>somewhat cluttered</li>
+<li>Tables/graphs are unclear</li>
+</ul></td>
+    <td>
+		<ul style="list-style-type:disc;">
+	
+<li>The article is readable by teens</li>
+<li>Good coherence</li>
+<li>Good sectioning </li>
+<li>Good use of tables/graphs to show results</li>
+<li>Tables and graphs are clearly<br> presented with headers and a legend</li>
+</ul></td>
+	<td style="width:auto">
+		<ul style="list-style-type:disc;">
+	<li>The article is highly <br>readable by target audience <br>as well as scientists</li>
+<li>Excellent coherence</li>
+<li>Effective sectioning <br>that helps in readability </li>
+<li>Excellent use of <br>tables/graphs to summarise <br>results and any trends</li>
+</li>Tables and graphs are <br>very clearly presented <br>with appropriate headers <br>and an unambiguous legend</li>
+</ul></td></tr></table></div>	<br>					
+							   
+                      <input class="box" type="number" name="score02" 
+            id="number" placeholder="Score " value="<%=rubric.score02%>" onchange="computeFinal()"/><br> <br>
+                              
+            <input class="box" type="text" name="cmnt02" id="comment"  
+            placeholder="Comment" value="<%=rubric.cmnt02%>"/><br>
+</div>	
+
+
+
+
+  <div class="tab">  				   
+							   
+			<h2>1.3 GRAPHICAL PRESENTATION</h2>
+  <ul style="list-style-type:disc;">
+<li>Neat, simple and uncluttered diagrams/figures showing important features</li>
+<li>In case of photographs, good lighting and clarity</li>
+<li>Figures, graphs and tables clearly labelled </li>
+<li>Appropriate use of scales, labels, symbols, lines and legends</li>
+<li>Clear and concise captions</li>
+<li>Where needed, relevant units shown</li></ul>		<br>		   
+           		   
+                      <input class="box" type="number" name="score03" 
+            id="number" placeholder="Score " value="<%=rubric.score03%>" onchange="computeFinal()"/><br><br> 
+                              
+            <input class="box" type="text" name="cmnt03" id="comment"  
+            placeholder="Comment" value="<%=rubric.cmnt03%>"/><br>
+			
+			<h2>1.4 REFERENCES</h2>
+<ul style="list-style-type:disc;">
+<li>Articles should follow the Chicago referencing style</li>
+<li>Check that there are sufficient references</li>
+<li>Check that they are ordered correctly </li>
+<li>Ensure there is a valid link to the original source page, as opposed to just the author</li>
+<li>All claims, sources of external information and key assumptions used should be supported by references</li></ul><br>
+		   
+                      <input class="box" type="number" name="score04" 
+            id="number" placeholder="Score " value="<%=rubric.score04%>" onchange="computeFinal()"/><br> <br>
+                              
+            <input class="box" type="text" name="cmnt04" id="comment"  
+            placeholder="Comment" value="<%=rubric.cmnt04%>"/><br>
+            
+
+</div>	
+
+
+
+
+  <div class="tab">  				   
+						
+
+
+  <h2>2. Scientific/Technical Content</h2>
+<h3>2.1 INTRODUCTION/BACKGROUND/LITERATURE REVIEW</h3>
+The introduction should give the reader an effective and concise overview of the work and outline its aims and objectives. The background should explain clearly the work’s significance in a broader scientific context to an unfamiliar reader. It should explain the significance of the work both within the field and in general. The literature review should discuss other studies conducted in the field and how the other studies’ results relate to this work. Ensure all information included is relevant and is not just being used to pad out an article. Bear in mind that an author may structure this part of their article differently – this is ok as long as all of these points are covered.
+<div style="overflow-x:auto;">
+<table style="width:auto" align="center">
+  <tr>
+    <td style="width:auto">
+	<ul style="list-style-type:disc;">
+<li>No reference to titleExcessive rambling, waffling etc.</li>
+<li>Insufficient depth of background </li>
+<li>Excessively long background</li>
+<li>No reference to significance of the research</li>
+<li>No mention of other studies’ results</li>
+<li>Absence of literature review</li></ul></td>
+
+  <td style="width:auto">
+	<ul style="list-style-type:disc;">
+<li>Somewhat rambling, waffling etc.</li>
+<li>Poor communication of introduction/ background</li>
+<li>Overly long background</li>
+<li>Poor reference to significance of the research</li>
+<li>Little mention of other studies’ results</li></ul></td>
+
+  <td style="width:auto">
+	<ul style="list-style-type:disc;">
+<li>Good coherence </li>
+<li>Good communication of introduction/ background</li>
+<li>Good reference to significance of the research</li>
+<li>Some mention of other studies’ results</li></ul></td>
+
+  <td style="width:auto">
+	<ul style="list-style-type:disc;">
+<li>Excellent coherence</li>
+<li>Context of work communicated excellently</li>
+<li>Significance of research is made very clear</li>
+<li>Highly effective conclusions and clearly presented results</li></ul></td>
+</tr></table></div>						<br>
+			            <input class="box" type="number" name="score05" 
+            id="number" placeholder="Score " value="<%=rubric.score05%>" onchange="computeFinal()"/><br> <br>
+                              
+            <input class="box" type="text" name="cmnt05" id="comment"  
+            placeholder="Comment" value="<%=rubric.cmnt05%>"/><br>
+</div>	
+
+
+
+
+
+
+
+
+  <div class="tab">  				   
+			
+
+ <h2>2.2 METHOD</h2>
+The method section should outline in sufficient detail how the research was conducted. The method should be appropriate to the aims and objectives stated. Key decisions and choices in methodology should be explained, particularly regarding a control or not. Ensure that sources of error are identified and minimised as much as possible. If relevant, the adherence of the research to applicable ethical standards in the author’s jurisdiction should be outlined in good detail.
+<div style="overflow-x:auto;">
+<table style="width:auto" align="center">
+  <tr>
+    <td style="width:auto">
+	<ul style="list-style-type:disc;">
+MARKS: 0-5
+<li>Plagiarism or references <br>due not cited/missing (Plagiarism = 0)</li>
+<li>Inaccurate science</li>
+<li>No originality in research paper <br>(if not presented as a review project)</li>
+<li>Mere re-stating of <br>old works (If not review project)</li>
+<li>Results and conclusions missing</li></ul></td>
+  <td style="width:auto">
+	<ul style="list-style-type:disc;">
+MARKS: 5-10
+<li>Not all references are cited/missing</li>
+<li>Science somewhat inaccurate</li>
+<li>Originality is there but <br>must be presented better</li>
+<li>Results and conclusions<br> need to be connected better</li></ul></td>
+  <td style="width:auto">
+	<ul style="list-style-type:disc;">
+MARKS: 10-15
+<li>All references in place</li>
+<li>Science accurate</li>
+<li>Writing and science <br>are original</li>
+<li>Good conclusions and<br> results are presented</li></ul></td>
+
+  <td style="width:auto">
+	<ul style="list-style-type:disc;">
+MARKS 15-20
+<li>Excellent references <br>and in place</li>
+<li>Science accurate and presented effectively</li>
+<li>Science is original</li>
+<li>Highly effective conclusions<br> and clearly presented results</li></ul></td>
+</tr></table></div>			<br>
+							   
+                       <input class="box" type="number" name="score06" 
+            id="number" placeholder="Score " value="<%=rubric.score06%>" onchange="computeFinal()"/><br> <br>
+                              
+            <input class="box" type="text" name="cmnt06" id="comment"  
+            placeholder="Comment" value="<%=rubric.cmnt06%>"/><br>
+</div>	
+
+
+
+
+ <div class="tab">  				   
+							   
+	 <h2>2.3 CALCULATIONS/RESULTS</h2>
+The calculations should all be correct (and checked) and numerical data given to an appropriate number of significant figures. All equations used should be presented algebraically with all terms explained before used to show results. Example calculations should also be included. Unnecessary, distracting or unclear data visualisations should be omitted. Appropriate data interpretation (trends etc.) should be presented. If statistics comprise part of the results, ensure they are appropriate and complete (e.g. error %, standard deviation). Check that the correct units are used and that any unexpected/anomalous results are pointed out.
+<div style="overflow-x:auto;">
+<table style="width:auto" align="center">
+  <tr>
+    <td style="width:auto">
+	<ul style="list-style-type:disc;">
+MARKS: 0-5
+<li>Plagiarism or references due not<br> cited/missing (Plagiarism = 0)</li>
+<li>Inaccurate science</li>
+<li>No originality in research paper <br>(if not presented as a review project)</li>
+<li>Mere re-stating of old works<br> (If not review project)</li>
+<li>Results and conclusions missing</li></ul></td>
+ <td style="width:auto">
+	<ul style="list-style-type:disc;">
+MARKS: 5-10
+<li>Not all references are cited/missing</li>
+<li>Science somewhat inaccurate</li>
+<li>Originality is there but must be presented better</li>
+<li>Results and conclusions need to be connected better</li></ul></td>
+ <td style="width:auto">
+	<ul style="list-style-type:disc;">
+MARKS: 10-15
+<li>All references in place</li>
+<li>Science accurate</li>
+<li>Writing and science are original</li>
+<li>Good conclusions and results are presented</li></ul></td>
+
+ <td style="width:auto">
+	<ul style="list-style-type:disc;">
+MARKS 15-20
+<li>Excellent references and in place</li>
+<li>Science accurate and presented effectively</li>
+<li>Science is original</li>
+<li>Highly effective conclusions and clearly presented results</li></ul></td>
+</tr></table></div><br>
+ 						   
+                        <input class="box" type="number" name="score07" 
+            id="number" placeholder="Score " value="<%=rubric.score07%>" onchange="computeFinal()"/><br> <br>
+                              
+            <input class="box" type="text" name="cmnt07" id="comment"  
+            placeholder="Comment" value="<%=rubric.cmnt07%>"/><br>
+</div>	
+
+
+
+  <div class="tab">  				   
+							   
+	
+  <h2>2.4 DISCUSSION </h2>
+It should include logical interpretations and discussion of results. It must also tell the readers how the study undertaken is a part of a larger picture and how it is significant. Why should we care about these results?
+<br><b><i style="color:red">Original Research</i></b>
+	<ul style="list-style-type:disc;">
+<li>Are the results reasonable, and if not – why not?</li>
+<li>Do the results adequately address the stated aims and objectives?</li>
+<li>Is there a discussion on the level of agreement between theory and experiments, </li>
+<li>Is there a discussion on the applicability and limitations of relevant theories?</li>
+<li>Where applicable, is the relationship between variables stated?</li>
+<li>Are anomalous results present? If so, are they discussed?</li></ul>
+<b><i style="color:red">Magazine/Review Article</i></b>
+	<ul style="list-style-type:disc;">
+<li>Has the author evaluated the science presented so as to make the article unique? <br>(~50% of the article, at a minimum 20%, should be evaluation as opposed to restating facts)</li>
+<li>Has the author presented an alternative view, a counterargument or an opinion?</li>
+<li>Have recent developments and potential applications in the field been discussed?</li></ul><br>
+
+  
+  <div style="overflow-x:auto;">
+<table style="width:auto" align="center">
+  <tr>
+    <td style="width:auto">
+	<ul style="list-style-type:disc;">
+	
+<li>Discussion/Conclusions are intermingled with results </li>
+<li>There is no discussion/conclusion section at all</li>
+<li>The interpretations are not logical and have no relation with the results</li>
+<li>It simply restates the results in words without evaluating them</li>
+<li>Significance of the study and further research suggestions are not present</li>
+<li>Broad context of the work is not mentioned</li></ul></td>
+   <td style="width:auto">
+	<ul style="list-style-type:disc;">
+<li>Separate discussion section is present but not satisfactory</li>
+<li>Interpretations follow in a semi-logical manner </li>
+<li>Interpretations are convoluted and incoherent</li>
+<li>The significance of the study is not stated enough to the reader</li>
+<li>Broad context of the work is poorly communicated</li></ul></td>
+   <td style="width:auto">
+	<ul style="list-style-type:disc;">
+<li>Good discussion with clear and concise main points</li>
+<li>Good interpretation and communication of results</li>
+<li>Significance of the study as part of the larger picture is mentioned</li>
+<li>Broad context of the work is communicated well</li>
+<li>Some mention of potential future developments</li></ul></td>
+   <td style="width:auto">
+	<ul style="list-style-type:disc;">
+<li>All discussion is coherent and effective</li>
+<li>Excellent interpretation that help reinforce the purpose of the study</li>
+<li>Significance of the study as part of the larger picture is discussed effectively</li>
+<li>The section suggests where and how to do further study or research</li>
+<li>The discussion predicts further hypothesis, study or applications</li></ul></td>
+</tr></table></div><br>
+						   
+                       <input class="box" type="number" name="score08" 
+            id="number" placeholder="Score " value="<%=rubric.score08%>" onchange="computeFinal()"/><br> <br>
+                              
+            <input class="box" type="text" name="cmnt08" id="comment"  
+            placeholder="Comment" value="<%=rubric.cmnt08%>"/><br>
+</div>	
+
+
+
+  <div class="tab">  				   
+							   
+	
+<h2>2.5 CONCLUSION(S) </h2>
+<ul style="list-style-type:disc;">
+<li>Is there a distinct, clear, concise conclusion section presenting a useful summary of the main findings and most important aspects of the discussion?</li>
+<li>Did the research fulfil the objective? If not, why not? (It is ok to be unsuccessful – but understanding why is the key to learning from mistakes)</li>
+<li>Why does this research matter?</li>
+<b><i style="color:red">Litmus test:</b></i> If a person reads only the introduction, background and conclusion, will they have the essence of the article? If not, then something is not right.
+  <div style="overflow-x:auto;">
+<table style="width:auto" align="center">
+  <tr>
+    <td style="width:auto">
+	<ul style="list-style-type:disc;">
+<li>Conclusions are intermingled with another section</li>
+<li>Poor summary of article’s results/findings</li>
+<li>Conclusions bear no relation to results or discussion</li>
+<li>Inclusion of material not already presented</li></ul></td>
+<li>Conclusions missing</li>
+ <td style="width:auto">
+	<ul style="list-style-type:disc;">
+<li>Distinct conclusions section but poorly presented</li>
+<li>Verbose and unconcise conclusions</li>
+<li>Link with results and discussion tenuous</li>
+<li>Ineffective communication of article’s findings</li></ul></td>
+ <td style="width:auto">
+	<ul style="list-style-type:disc;">
+<li>Conclusions well formatted </li>
+<li>Conclusions are reasonably clear</li>
+<li>Good linking to results and discussion</li>
+<li>Somewhat coherent communication of the article’s findings</li></ul></td>
+ <td style="width:auto">
+	<ul style="list-style-type:disc;">
+<li>Conclusions excellently formatted</li>
+<li>Conclusions are very clear and concise</li>
+<li>Excellent logical connection with results and discussion</li>
+<li>Effective and coherent communication of the article’s findings</li></ul></td>
+</tr></table></div><br>
+
+	            <input class="box" type="number" name="score09" 
+            id="number" placeholder="Score " value="<%=rubric.score09%>" onchange="computeFinal()"/><br> <br>
+                              
+            <input class="box" type="text" name="cmnt09" id="comment"  
+            placeholder="Comment" value="<%=rubric.cmnt09%>"/><br>
+</div>	
+
+
+  <div class="tab">  				   
+							   
+	<h2>2.6 SCOPE & ORIGINALITY </h2>
+Is the article original and innovative or is it just a repeat of something done before? All articles should add some new insight or evaluation, either new science or some new opinion.
+ <br> <input class="box" type="text" name="cmnt10" id="comment"  
+            placeholder="Comment" value="<%=rubric.cmnt10%>"/><br>
+</div> 
+
+  <div class="tab">
+  
+  <h2>Final Score</h2>
+<h3>Overall Score. Does the aggregated score place the article in the correct overall category?</h3>
+<div style="overflow-x:auto;">
+<table style="width:auto" align="center">
+  <tr>
+    <th><img src="1.jpg"> </th>
+    <th><img src="2.png"></th>
+    <th> <img src="3.png"></th>
+	<th><img src="4.png"></th>
+  </tr>
+  <tr>
+    <td>
+	<ul style="list-style-type:disc;">0-40
+<li>A poor article. </li>
+<li>This article is not a standard acceptable for publication in a journal in both scientific content and communication.</li>
+<li>REJECTED</li>
+</ul>
+	</td>
+    <td>
+		<ul style="list-style-type:disc;">
+	
+40-60
+<li>An average article.</li>
+<li>The article is acceptable containing some good elements but needs substantial work before it is publishable.</li> 
+<li>BORDERLINE – Second review necessary.</li>
+
+</ul>
+	</td>
+    <td>
+		<ul style="list-style-type:disc;">
+	60-80
+<li>A good article</li>
+<li>The article has good scientific integrity and concepts are generally well communicated. With some polishing the article can be published. </li>
+<li>ACCEPTED</li>
+
+</ul>
+	</td>
+	<td>
+		<ul style="list-style-type:disc;">
+80-100
+<li>An excellent article</li>
+<li>The article is to a near professional standard with few/no errors. Some additional polishing will make this a professional grade article. </li>
+<li>ACCEPTED -Accelerated Publication</li></ul>
+</td></table></div><br>
+
+						   
+                       <input class="box" type="text" name="score10" placeholder="Score " id="score10" readonly /><br> 
+                              
+           
+  
+</div>	
+
+                        <br> 
+        
+                  
+				  <br><br><br>
+				  <div style="overflow:auto;">
+  </div>
+  <%if (!readOnly) { %>
+  <input type="submit" name="submit" value="Save!">
+            </form> 
+	<%}%>
+                      
+        </div> 
+                  
+      
+   <script type="text/javascript">
+     function computeFinal() {
+      let tot = 0;
+      let scores = document.querySelectorAll('[name^="score0"]');
+      for (var i = scores.length - 1; i >= 0; i--) {
+        tot += parseInt(scores[i].value);
+      }
+=      document.getElementById("score10").value = tot;
+      if (isNaN(tot)) {
+        document.getElementById("score10").value = "Scores not assigned for each section";
+      }
+     }
+     
+     window.onload = computeFinal;
+
+    <%if (readOnly) { %>
+          let inputs = document.getElementsByTagName("input");
+          for (var i = inputs.length - 1; i >= 0; i--) {
+            inputs[i].readOnly = true;
+          }
+    <% } %>
+    <%if (!readOnly) { %>
+      setInterval(function(){
+        var form = $('#regForm');
+        var method = form.attr('method').toLowerCase();      // "get" or "post"
+        var action = form.attr('action'); 
+        console.log(method);                   // url to submit to
+
+        $.post(action, form.serialize(), function( data ) {
+          alert("Autosaved");
+        });
+      },420000); // every 7 minutes    
+    <%}%>
+   </script>
+	
+</body> 
+</html>     
