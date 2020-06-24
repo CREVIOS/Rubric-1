@@ -144,5 +144,6 @@ app.post('/autosave_form', function(req, res) {
 	})
 })
 
-app.listen(3000,() => console.log('listening at 3000'));
+let listener = app.listen(process.env.PORT || 3000);
+console.log('Listening on port ' + listener.address().port)
     
