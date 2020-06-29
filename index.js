@@ -119,6 +119,7 @@ app.post('/save_form', function(req,res){
 		if (oldData.rubrics[req.session.authenticatedUser].length > 10) {
 			oldData.rubrics[req.session.authenticatedUser].shift();
 		}
+		req.body.timestamp = Date.now();
 		oldData.rubrics[req.session.authenticatedUser].push(req.body);
         let article = db.collection("articles").doc(req.query.id);
 		article.update(oldData);
@@ -137,6 +138,7 @@ app.post('/autosave_form', function(req, res) {
 		if (oldData.rubrics[req.session.authenticatedUser].length > 10) {
 			oldData.rubrics[req.session.authenticatedUser].shift();
 		}
+		req.body.timestamp = Date.now();
 		oldData.rubrics[req.session.authenticatedUser].push(req.body);
         let article = db.collection("articles").doc(req.query.id);
 		article.update(oldData);
